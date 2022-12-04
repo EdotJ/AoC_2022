@@ -24,4 +24,5 @@
            |   |
           |`````|
           \_____/
-          
+```
+<sub>(Christmas tree ASCII art yoinked from https://www.asciiart.eu/holiday-and-events/christmas/trees)<sub>
