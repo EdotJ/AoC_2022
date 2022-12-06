@@ -1,6 +1,5 @@
 (ns day5
-  (:require [clojure.string :as string]
-            [clojure.walk :as walk]))
+  (:require [clojure.string :as string]))
 
 (def COL_LENGTH 4)
 
