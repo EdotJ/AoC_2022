@@ -97,7 +97,6 @@
         col-count (- (count (first grid)) 1)
         inner-grid (get-inner-grid grid row-count col-count)
         edges (get-edges grid row-count col-count)]
-    ;; (println "Visible tree count: " (+ (count edges) (count (get-visible grid inner-grid))))
-    ;; (println (get-scenic-score {:row 2, :col 2, :height 3} grid))
+    (println "Visible tree count: " (+ (count edges) (count (get-visible grid inner-grid))))
     (println (apply max (get-scenic-scores inner-grid grid)))
     ))
