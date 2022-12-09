@@ -9,29 +9,24 @@
 
 (defn move-head [head direction]
   (let [new-head (cond
-                   (= "R" direction) {:x (+ (get head :x) 1) :y (get head :y)}
-                   (= "L" direction) {:x (- (get head :x) 1) :y (get head :y)}
-                   (= "U" direction) {:x (get head :x) :y (+ (get head :y) 1)}
-                   (= "D" direction) {:x (get head :x) :y (- (get head :y) 1)})]
+                   (= "R" direction) {:x (inc (get head :x)) :y (get head :y)}
+                   (= "L" direction) {:x (dec (get head :x)) :y (get head :y)}
+                   (= "U" direction) {:x (get head :x) :y (inc (get head :y))}
+                   (= "D" direction) {:x (get head :x) :y (dec (get head :y))})]
     new-head))
 
 (defn pos-diff [head tail key]
   (abs (- (get head key) (get tail key))))
 
 (defn move-tail [head tail]
-  (if (and (< (pos-diff head tail :x) 2) (< (pos-diff head tail :y) 2))
-    (do ;;(println "Not moving tail anywhere")
-      tail)
-
-    (let [horizontal-indicator (Integer/signum (- (get head :x) (get tail :x)))
-          vertical-indicator (Integer/signum (- (get head :y) (get tail :y)))
-          new-tail (cond
-                     (and (= (pos-diff head tail :x) 2) (= (pos-diff head tail :y) 1)) {:x (+ (get tail :x) horizontal-indicator) :y (+ (get tail :y) vertical-indicator)}
-                     (and (= (pos-diff head tail :x) 1) (= (pos-diff head tail :y) 2)) {:x (+ (get tail :x) horizontal-indicator) :y (+ (get tail :y) vertical-indicator)}
-                     (= (pos-diff head tail :x) 2) {:x (+ (get tail :x) horizontal-indicator) :y (get tail :y)}
-                     (= (pos-diff head tail :y) 2) {:x (get tail :x) :y (+ (get tail :y) vertical-indicator)})]
-      ;; (println "Moving tail from" tail "to" new-tail)
-      new-tail)))
+  (if (and (< (pos-diff head tail :x) 2) (< (pos-diff head tail :y) 2)) tail
+      (let [horizontal-indicator (Integer/signum (- (get head :x) (get tail :x)))
+            vertical-indicator (Integer/signum (- (get head :y) (get tail :y)))
+            new-tail (cond
+                       (or (= (pos-diff head tail :x) 2) (= (pos-diff head tail :y) 2)) {:x (+ (get tail :x) horizontal-indicator) :y (+ (get tail :y) vertical-indicator)}
+                       (= (pos-diff head tail :x) 2) {:x (+ (get tail :x) horizontal-indicator) :y (get tail :y)}
+                       (= (pos-diff head tail :y) 2) {:x (get tail :x) :y (+ (get tail :y) vertical-indicator)})]
+        new-tail)))
 
 (defn update-visited [visited tail]
   (conj visited tail))
@@ -40,16 +35,16 @@
   (loop [head {:x 0 :y 0}
          tail {:x (get head :x) :y (get head :y)}
          dirs directions
-         visited (set [tail])]
+         visited #{}]
     (if (empty? dirs)
       [head tail visited]
       (let [new-head (move-head head (first dirs))
             new-tail (move-tail new-head tail)]
-        (recur new-head new-tail (drop 1 dirs) (conj visited tail))))))
+        (recur new-head new-tail (rest dirs) (conj visited new-tail))))))
 
 (defn solve [opts]
   (let [moves (get-input)
         head {:x 0 :y 0}
         tail {:x (get head :x) :y (get head :y)}
         [final-head final-tail visited] (move moves)]
-    (println visited)))
+    (println (count visited))))
