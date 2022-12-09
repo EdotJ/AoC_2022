@@ -31,20 +31,30 @@
 (defn update-visited [visited tail]
   (conj visited tail))
 
-(defn move [directions]
-  (loop [head {:x 0 :y 0}
-         tail {:x (get head :x) :y (get head :y)}
+(defn move-rope [rope direction]
+  (loop [r (vec rope)
+         dir direction
+         idx 0]
+    (cond
+      (= idx 0) (recur (assoc r 0 (move-head (first r) direction)) dir (inc idx))
+      (= idx (count rope)) r
+      :else (recur (assoc r idx (move-tail (nth r (dec idx)) (nth r idx))) dir (inc idx)))))
+
+(defn move [directions length]
+  (loop [rope (repeat length {:x 0 :y 0})
          dirs directions
          visited #{}]
     (if (empty? dirs)
-      [head tail visited]
-      (let [new-head (move-head head (first dirs))
-            new-tail (move-tail new-head tail)]
-        (recur new-head new-tail (rest dirs) (conj visited new-tail))))))
+      [rope visited]
+      (let [new-rope (move-rope rope (first dirs))
+            new-tail (last new-rope)]
+        (recur new-rope (rest dirs) (conj visited new-tail))))))
 
 (defn solve [opts]
   (let [moves (get-input)
         head {:x 0 :y 0}
         tail {:x (get head :x) :y (get head :y)}
-        [final-head final-tail visited] (move moves)]
-    (println (count visited))))
+        [rope-p1 visited-p1] (move moves 2)
+        [rope-p1 visited-p2] (move moves 10)]
+    (println (count visited-p1))
+    (println (count visited-p2))))
